@@ -7,29 +7,34 @@ export interface UseHomeMangaReturn {
   isLoading: boolean
   error: string | null
   currentPage: number
+  searchQuery: string
   hasNextPage: boolean
   setCurrentPage: (page: number) => void
-  nextPage: () => void
-  prevPage: () => void
+  handleSearch: (query: string) => void
+  clearSearch: () => void
   refetch: () => void
 }
 
 export function useHomeManga(initialPage = 1): UseHomeMangaReturn {
   const [currentPage, setCurrentPageState] = useState<number>(initialPage)
+  const [searchQuery, setSearchQuery] = useState<string>('')
   const [mangaList, setMangaList] = useState<MangaListItem[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [hasNextPage, setHasNextPage] = useState<boolean>(true)
 
-  const fetchManga = useCallback(async (pageToFetch: number) => {
+  const fetchManga = useCallback(async (pageToFetch: number, queryToFetch: string) => {
     setIsLoading(true)
     setError(null)
 
     try {
-      const response = await getMangaList({ page: pageToFetch })
+      const response = await getMangaList({
+        page: pageToFetch,
+        q: queryToFetch || undefined,
+      })
+
       if (response && Array.isArray(response.results)) {
         setMangaList(response.results)
-        // Assume next page is available if results are returned
         setHasNextPage(response.results.length > 0)
       } else {
         setMangaList([])
@@ -48,8 +53,8 @@ export function useHomeManga(initialPage = 1): UseHomeMangaReturn {
   }, [])
 
   useEffect(() => {
-    fetchManga(currentPage)
-  }, [currentPage, fetchManga])
+    fetchManga(currentPage, searchQuery)
+  }, [currentPage, searchQuery, fetchManga])
 
   const setCurrentPage = useCallback((page: number) => {
     if (page < 1) return
@@ -59,40 +64,37 @@ export function useHomeManga(initialPage = 1): UseHomeMangaReturn {
     }
   }, [])
 
-  const nextPage = useCallback(() => {
-    setCurrentPageState((prev) => {
-      const next = prev + 1
-      if (typeof window !== 'undefined') {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      }
-      return next
-    })
+  const handleSearch = useCallback((query: string) => {
+    const trimmed = query.trim()
+    setSearchQuery(trimmed)
+    setCurrentPageState(1)
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }, [])
 
-  const prevPage = useCallback(() => {
-    setCurrentPageState((prev) => {
-      if (prev <= 1) return 1
-      const next = prev - 1
-      if (typeof window !== 'undefined') {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      }
-      return next
-    })
+  const clearSearch = useCallback(() => {
+    setSearchQuery('')
+    setCurrentPageState(1)
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }, [])
 
   const refetch = useCallback(() => {
-    fetchManga(currentPage)
-  }, [currentPage, fetchManga])
+    fetchManga(currentPage, searchQuery)
+  }, [currentPage, searchQuery, fetchManga])
 
   return {
     mangaList,
     isLoading,
     error,
     currentPage,
+    searchQuery,
     hasNextPage,
     setCurrentPage,
-    nextPage,
-    prevPage,
+    handleSearch,
+    clearSearch,
     refetch,
   }
 }
