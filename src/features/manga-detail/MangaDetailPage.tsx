@@ -8,6 +8,7 @@ export interface MangaDetailPageProps {
   fallbackThumbnail?: string
   onBack: () => void
   onSelectGenre?: (genreSlug: string) => void
+  onSelectChapter?: (chapterSlug: string) => void
 }
 
 export default function MangaDetailPage({
@@ -15,6 +16,7 @@ export default function MangaDetailPage({
   fallbackThumbnail,
   onBack,
   onSelectGenre,
+  onSelectChapter,
 }: MangaDetailPageProps) {
   const { mangaDetail, isLoading, error, refetch } = useMangaDetail(slug, fallbackThumbnail)
 
@@ -97,7 +99,11 @@ export default function MangaDetailPage({
             onSelectGenre={onSelectGenre}
           />
           <MangaSynopsis synopsis={mangaDetail.synopsis} />
-          <ChapterList chapters={mangaDetail.chapters} chaptersCount={mangaDetail.chapters_count} />
+          <ChapterList
+            chapters={mangaDetail.chapters}
+            chaptersCount={mangaDetail.chapters_count}
+            onSelectChapter={onSelectChapter}
+          />
         </div>
       )}
     </section>
