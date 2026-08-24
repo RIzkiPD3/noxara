@@ -31,7 +31,7 @@ export default function ComicCard({ manga, onSelectManga }: ComicCardProps) {
     if (lowerType.includes('manhua')) {
       return 'bg-amber-500/20 text-amber-400 border-amber-500/30'
     }
-    return 'bg-slate-700/50 text-slate-300 border-slate-600/50'
+    return 'bg-slate-800/80 text-slate-300 border-slate-700/60'
   }
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
@@ -47,9 +47,9 @@ export default function ComicCard({ manga, onSelectManga }: ComicCardProps) {
     <a
       href={href}
       onClick={handleClick}
-      className="group flex flex-col h-full bg-slate-900/60 border border-slate-800/80 rounded-xl overflow-hidden hover:border-slate-700/80 hover:shadow-xl hover:shadow-emerald-500/5 hover:-translate-y-1 transition-all duration-200 cursor-pointer block"
+      className="group flex flex-col h-full bg-slate-900 border border-slate-800/80 hover:border-emerald-500/40 rounded-xl overflow-hidden transition-colors duration-200 cursor-pointer block"
     >
-      {/* Thumbnail Container */}
+      {/* Poster Cover Container */}
       <div className="relative aspect-[3/4] w-full bg-slate-950 overflow-hidden">
         {imgSrc ? (
           <img
@@ -57,7 +57,7 @@ export default function ComicCard({ manga, onSelectManga }: ComicCardProps) {
             alt={manga.title}
             onError={handleImageError}
             loading="lazy"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-90"
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-slate-900 text-slate-600">
@@ -70,26 +70,26 @@ export default function ComicCard({ manga, onSelectManga }: ComicCardProps) {
 
         {/* Type Badge */}
         {manga.type && (
-          <div className="absolute top-2.5 left-2.5">
-            <span className={`px-2 py-0.5 text-[11px] font-semibold rounded-md backdrop-blur-md border shadow-sm ${getTypeBadgeStyle(manga.type)}`}>
+          <div className="absolute top-2 left-2">
+            <span className={`px-2 py-0.5 text-[11px] font-semibold rounded-md border shadow-sm ${getTypeBadgeStyle(manga.type)}`}>
               {manga.type}
             </span>
           </div>
         )}
 
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
       </div>
 
       {/* Content Body */}
-      <div className="p-2.5 sm:p-3.5 flex flex-col flex-1 justify-between gap-1.5 sm:gap-2">
-        <h3 className="text-xs sm:text-sm font-semibold text-slate-100 group-hover:text-emerald-400 line-clamp-2 leading-snug transition-colors">
+      <div className="p-2.5 sm:p-3 flex flex-col flex-1 justify-between gap-1.5">
+        <h3 className="text-xs sm:text-sm font-semibold text-slate-200 group-hover:text-emerald-400 line-clamp-2 leading-snug transition-colors">
           {manga.title}
         </h3>
 
         {/* Latest Chapter Footer */}
         {manga.latest_chapter && (
-          <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+          <div className="pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
             <span className="truncate text-slate-400 group-hover:text-slate-300">
               {manga.latest_chapter}
             </span>
