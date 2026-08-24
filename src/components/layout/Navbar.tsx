@@ -1,11 +1,14 @@
-import { useState, useEffect, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent, type MouseEvent } from 'react'
+import { useBookmarks } from '@/features/bookmarks/hooks/useBookmarks'
 
 export interface NavbarProps {
   searchQuery?: string
-  activeView?: 'home' | 'detail' | 'reader'
+  activeView?: 'home' | 'library' | 'genres' | 'bookmarks' | 'detail' | 'reader'
   onSearch?: (query: string) => void
   onNavigateHome?: () => void
-  onNavigateGenre?: () => void
+  onNavigateLibrary?: () => void
+  onNavigateGenres?: () => void
+  onNavigateBookmarks?: () => void
 }
 
 export default function Navbar({
@@ -13,8 +16,11 @@ export default function Navbar({
   activeView = 'home',
   onSearch,
   onNavigateHome,
-  onNavigateGenre,
+  onNavigateLibrary,
+  onNavigateGenres,
+  onNavigateBookmarks,
 }: NavbarProps) {
+  const { totalBookmarks } = useBookmarks()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [inputValue, setInputValue] = useState(searchQuery)
 
@@ -38,16 +44,32 @@ export default function Navbar({
     }
   }
 
-  const handleHomeClick = (e: React.MouseEvent) => {
+  const handleHomeClick = (e: MouseEvent) => {
     e.preventDefault()
     handleClear()
     if (onNavigateHome) onNavigateHome()
+    else if (typeof window !== 'undefined') window.location.hash = ''
     setIsMobileMenuOpen(false)
   }
 
-  const handleGenreClick = (e: React.MouseEvent) => {
+  const handleLibraryClick = (e: MouseEvent) => {
     e.preventDefault()
-    if (onNavigateGenre) onNavigateGenre()
+    if (onNavigateLibrary) onNavigateLibrary()
+    else if (typeof window !== 'undefined') window.location.hash = '#/comics'
+    setIsMobileMenuOpen(false)
+  }
+
+  const handleGenresClick = (e: MouseEvent) => {
+    e.preventDefault()
+    if (onNavigateGenres) onNavigateGenres()
+    else if (typeof window !== 'undefined') window.location.hash = '#/genres'
+    setIsMobileMenuOpen(false)
+  }
+
+  const handleBookmarksClick = (e: MouseEvent) => {
+    e.preventDefault()
+    if (onNavigateBookmarks) onNavigateBookmarks()
+    else if (typeof window !== 'undefined') window.location.hash = '#/bookmarks'
     setIsMobileMenuOpen(false)
   }
 
@@ -89,20 +111,46 @@ export default function Navbar({
 
             {/* Daftar Komik */}
             <a
-              href="#"
-              onClick={handleHomeClick}
-              className="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/50 transition-colors cursor-pointer"
+              href="#/comics"
+              onClick={handleLibraryClick}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                activeView === 'library'
+                  ? 'bg-slate-800 text-emerald-400 font-semibold'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+              }`}
             >
               Daftar Komik
             </a>
 
             {/* Genre */}
             <a
-              href="#"
-              onClick={handleGenreClick}
-              className="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/50 transition-colors cursor-pointer"
+              href="#/genres"
+              onClick={handleGenresClick}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                activeView === 'genres'
+                  ? 'bg-slate-800 text-emerald-400 font-semibold'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+              }`}
             >
               Genre
+            </a>
+
+            {/* Bookmark */}
+            <a
+              href="#/bookmarks"
+              onClick={handleBookmarksClick}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeView === 'bookmarks'
+                  ? 'bg-slate-800 text-emerald-400 font-semibold'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+              }`}
+            >
+              <span>Bookmark</span>
+              {totalBookmarks > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold">
+                  {totalBookmarks}
+                </span>
+              )}
             </a>
           </nav>
 
@@ -207,18 +255,42 @@ export default function Navbar({
             Home
           </a>
           <a
-            href="#"
-            onClick={handleHomeClick}
-            className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800/50 transition-colors cursor-pointer"
+            href="#/comics"
+            onClick={handleLibraryClick}
+            className={`block px-3 py-2 rounded-md text-base font-medium transition-colors cursor-pointer ${
+              activeView === 'library'
+                ? 'bg-slate-800 text-emerald-400 font-semibold'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+            }`}
           >
             Daftar Komik
           </a>
           <a
-            href="#"
-            onClick={handleGenreClick}
-            className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800/50 transition-colors cursor-pointer"
+            href="#/genres"
+            onClick={handleGenresClick}
+            className={`block px-3 py-2 rounded-md text-base font-medium transition-colors cursor-pointer ${
+              activeView === 'genres'
+                ? 'bg-slate-800 text-emerald-400 font-semibold'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+            }`}
           >
             Genre
+          </a>
+          <a
+            href="#/bookmarks"
+            onClick={handleBookmarksClick}
+            className={`block px-3 py-2 rounded-md text-base font-medium transition-colors cursor-pointer flex items-center justify-between ${
+              activeView === 'bookmarks'
+                ? 'bg-slate-800 text-emerald-400 font-semibold'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+            }`}
+          >
+            <span>Bookmark</span>
+            {totalBookmarks > 0 && (
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold">
+                {totalBookmarks}
+              </span>
+            )}
           </a>
         </div>
       )}

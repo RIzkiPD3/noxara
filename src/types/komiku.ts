@@ -6,10 +6,10 @@
 export interface MangaListItem {
   title: string
   slug: string
-  type: string
-  latest_chapter: string
+  type?: string
+  latest_chapter?: string
   thumbnail: string
-  url: string
+  url?: string
 }
 
 export interface MangaListParams {

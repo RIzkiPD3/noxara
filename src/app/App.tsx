@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import AppLayout from '@/components/layout/AppLayout'
 import HomePage from '@/features/home/HomePage'
+import ComicLibraryPage from '@/features/library/ComicLibraryPage'
+import GenreDirectoryPage from '@/features/genres/GenreDirectoryPage'
+import BookmarkPage from '@/features/bookmarks/BookmarkPage'
 import MangaDetailPage from '@/features/manga-detail/MangaDetailPage'
 import ComicReaderPage from '@/features/reader/ComicReaderPage'
 import EntrancePage from '@/features/entrance/EntrancePage'
@@ -8,7 +11,7 @@ import { ENTRANCE_CONFIG } from '@/features/entrance/config/entranceConfig'
 import { useHomeManga } from '@/features/home/hooks/useHomeManga'
 
 interface HashState {
-  view: 'home' | 'detail' | 'reader'
+  view: 'home' | 'library' | 'genres' | 'bookmarks' | 'detail' | 'reader'
   slug: string | null
 }
 
@@ -22,6 +25,15 @@ function parseHash(): HashState {
   if (hash.startsWith('#/manga/')) {
     const slug = hash.replace('#/manga/', '').trim()
     return { view: 'detail', slug: slug || null }
+  }
+  if (hash.startsWith('#/comics')) {
+    return { view: 'library', slug: null }
+  }
+  if (hash.startsWith('#/genres')) {
+    return { view: 'genres', slug: null }
+  }
+  if (hash.startsWith('#/bookmarks')) {
+    return { view: 'bookmarks', slug: null }
   }
   return { view: 'home', slug: null }
 }
@@ -87,8 +99,8 @@ export default function App() {
     }
   }, [selectedMangaSlug])
 
-  const handleGenreFromDetail = useCallback((genreSlug: string) => {
-    window.location.hash = ''
+  const handleGenreFromDetailOrDirectory = useCallback((genreSlug: string) => {
+    window.location.hash = '#/comics'
     setSelectedMangaSlug(null)
     setSelectedThumbnail(undefined)
     mangaState.handleSelectGenre(genreSlug)
@@ -104,16 +116,32 @@ export default function App() {
     }
   }, [mangaState])
 
-  const handleNavigateGenre = useCallback(() => {
-    if (hashState.view !== 'home') {
-      window.location.hash = ''
-      setSelectedMangaSlug(null)
-      setSelectedThumbnail(undefined)
-    }
+  const handleNavigateLibrary = useCallback(() => {
+    window.location.hash = '#/comics'
+    setSelectedMangaSlug(null)
+    setSelectedThumbnail(undefined)
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
-  }, [hashState.view])
+  }, [])
+
+  const handleNavigateGenres = useCallback(() => {
+    window.location.hash = '#/genres'
+    setSelectedMangaSlug(null)
+    setSelectedThumbnail(undefined)
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [])
+
+  const handleNavigateBookmarks = useCallback(() => {
+    window.location.hash = '#/bookmarks'
+    setSelectedMangaSlug(null)
+    setSelectedThumbnail(undefined)
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [])
 
   // Gate Check: Show Entrance Page if access is not granted
   if (!isAccessGranted) {
@@ -125,15 +153,17 @@ export default function App() {
       searchQuery={mangaState.searchQuery}
       activeView={hashState.view}
       onSearch={(q) => {
-        if (hashState.view !== 'home') {
-          window.location.hash = ''
+        if (hashState.view !== 'home' && hashState.view !== 'library') {
+          window.location.hash = '#/comics'
           setSelectedMangaSlug(null)
           setSelectedThumbnail(undefined)
         }
         mangaState.handleSearch(q)
       }}
       onNavigateHome={handleNavigateHome}
-      onNavigateGenre={handleNavigateGenre}
+      onNavigateLibrary={handleNavigateLibrary}
+      onNavigateGenres={handleNavigateGenres}
+      onNavigateBookmarks={handleNavigateBookmarks}
     >
       {hashState.view === 'reader' && hashState.slug ? (
         <ComicReaderPage
@@ -146,8 +176,22 @@ export default function App() {
           slug={hashState.slug}
           fallbackThumbnail={selectedThumbnail}
           onBack={handleBackToHome}
-          onSelectGenre={handleGenreFromDetail}
+          onSelectGenre={handleGenreFromDetailOrDirectory}
           onSelectChapter={handleSelectChapter}
+        />
+      ) : hashState.view === 'library' ? (
+        <ComicLibraryPage
+          mangaState={mangaState}
+          onSelectManga={handleSelectManga}
+        />
+      ) : hashState.view === 'genres' ? (
+        <GenreDirectoryPage
+          onSelectGenre={handleGenreFromDetailOrDirectory}
+        />
+      ) : hashState.view === 'bookmarks' ? (
+        <BookmarkPage
+          onSelectManga={handleSelectManga}
+          onExploreComics={handleNavigateLibrary}
         />
       ) : (
         <HomePage
