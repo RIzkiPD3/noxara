@@ -6,9 +6,10 @@ import FilterBar from './components/FilterBar'
 
 export interface HomePageProps {
   mangaState: UseHomeMangaReturn
+  onSelectManga?: (slug: string, thumbnail?: string) => void
 }
 
-export default function HomePage({ mangaState }: HomePageProps) {
+export default function HomePage({ mangaState, onSelectManga }: HomePageProps) {
   const {
     mangaList,
     isLoading,
@@ -179,7 +180,7 @@ export default function HomePage({ mangaState }: HomePageProps) {
       {/* Success State: Comic Grid & Pagination */}
       {!isLoading && !error && mangaList.length > 0 && (
         <>
-          <ComicGrid items={mangaList} />
+          <ComicGrid items={mangaList} onSelectManga={onSelectManga} />
           <Pagination
             currentPage={currentPage}
             onPageChange={setCurrentPage}

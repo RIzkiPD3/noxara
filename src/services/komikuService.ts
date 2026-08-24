@@ -82,6 +82,7 @@ export async function getMangaGenres(): Promise<MangaGenresResponse> {
  */
 export function getImageProxyUrl(imageUrl: string): string {
   if (!imageUrl) return ''
+  const cleanUrl = imageUrl.split('?')[0].split('#')[0]
   const baseUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) || 'https://komiku-scrap.vercel.app'
-  return `${baseUrl}/api/image?url=${encodeURIComponent(imageUrl)}`
+  return `${baseUrl}/api/image?url=${encodeURIComponent(cleanUrl)}`
 }
