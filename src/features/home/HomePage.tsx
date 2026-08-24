@@ -2,6 +2,7 @@ import type { UseHomeMangaReturn } from './hooks/useHomeManga'
 import ComicGrid from './components/ComicGrid'
 import Pagination from '@/components/ui/Pagination'
 import GenreBar from '@/features/genres/components/GenreBar'
+import FilterBar from './components/FilterBar'
 
 export interface HomePageProps {
   mangaState: UseHomeMangaReturn
@@ -15,10 +16,15 @@ export default function HomePage({ mangaState }: HomePageProps) {
     currentPage,
     searchQuery,
     selectedGenre,
+    selectedType,
+    selectedSort,
     hasNextPage,
+    hasActiveFilters,
     setCurrentPage,
-    clearSearch,
     handleSelectGenre,
+    handleSelectType,
+    handleSelectSort,
+    resetAllFilters,
     refetch,
   } = mangaState
 
@@ -29,6 +35,16 @@ export default function HomePage({ mangaState }: HomePageProps) {
       const formattedGenre = selectedGenre.charAt(0).toUpperCase() + selectedGenre.slice(1)
       return `Komik Genre: ${formattedGenre}`
     }
+    if (selectedType) {
+      const typeMap: Record<string, string> = {
+        manga: 'Manga (Jepang)',
+        manhwa: 'Manhwa (Korea)',
+        manhua: 'Manhua (China)',
+      }
+      return `Komik Tipe: ${typeMap[selectedType] || selectedType}`
+    }
+    if (selectedSort === 'latest') return 'Komik Terbaru (Latest)'
+    if (selectedSort === 'update') return 'Komik Update Terbaru'
     return 'Komik Terbaru'
   }
 
@@ -36,6 +52,8 @@ export default function HomePage({ mangaState }: HomePageProps) {
   const getHeadingSubtitle = () => {
     if (searchQuery) return `Menampilkan hasil pencarian komik untuk kata kunci "${searchQuery}"`
     if (selectedGenre) return `Menampilkan daftar komik dengan genre ${selectedGenre}`
+    if (selectedType) return `Filter komik berdasarkan tipe ${selectedType}`
+    if (selectedSort) return `Daftar komik diurutkan berdasarkan ${selectedSort}`
     return 'Jelajahi komik terbaru yang diperbarui di Noxara'
   }
 
@@ -53,23 +71,33 @@ export default function HomePage({ mangaState }: HomePageProps) {
           </p>
         </div>
 
-        {/* Clear Search Action Button if active */}
-        {searchQuery && (
+        {/* Clear Search / Reset Filter Button if active */}
+        {hasActiveFilters && (
           <button
             type="button"
-            onClick={clearSearch}
+            onClick={resetAllFilters}
             className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
           >
             <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
-            <span>Reset Pencarian</span>
+            <span>Reset Semua Filter</span>
           </button>
         )}
       </div>
 
       {/* Genre Filter Bar */}
       <GenreBar selectedGenre={selectedGenre} onSelectGenre={handleSelectGenre} />
+
+      {/* Type & Sort Filter Toolbar */}
+      <FilterBar
+        selectedType={selectedType}
+        selectedSort={selectedSort}
+        onSelectType={handleSelectType}
+        onSelectSort={handleSelectSort}
+        onResetFilters={resetAllFilters}
+        hasActiveFilters={hasActiveFilters}
+      />
 
       {/* Loading State */}
       {isLoading && (
@@ -111,56 +139,32 @@ export default function HomePage({ mangaState }: HomePageProps) {
         </div>
       )}
 
-      {/* Genre Empty State */}
-      {!isLoading && !error && selectedGenre && mangaList.length === 0 && (
+      {/* Active Filter Empty State */}
+      {!isLoading && !error && hasActiveFilters && mangaList.length === 0 && (
         <div className="border border-slate-800 bg-slate-900/30 rounded-2xl p-10 text-center max-w-md mx-auto my-8 space-y-4">
           <div className="w-12 h-12 bg-slate-800 text-slate-400 rounded-full flex items-center justify-center mx-auto">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 7h10M7 12h10m-8 5h8" />
-            </svg>
-          </div>
-          <div>
-            <h3 className="text-base font-semibold text-slate-200">Belum Ada Komik Untuk Genre Ini</h3>
-            <p className="text-sm text-slate-400 mt-1">
-              Tidak ada komik yang tersedia pada genre &quot;<span className="text-slate-200 font-medium capitalize">{selectedGenre}</span>&quot;.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => handleSelectGenre('')}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold text-sm rounded-lg transition-colors cursor-pointer"
-          >
-            Lihat Semua Genre
-          </button>
-        </div>
-      )}
-
-      {/* Search Empty State */}
-      {!isLoading && !error && searchQuery && !selectedGenre && mangaList.length === 0 && (
-        <div className="border border-slate-800 bg-slate-900/30 rounded-2xl p-10 text-center max-w-md mx-auto my-8 space-y-4">
-          <div className="w-12 h-12 bg-slate-800 text-slate-400 rounded-full flex items-center justify-center mx-auto">
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
           </div>
           <div>
             <h3 className="text-base font-semibold text-slate-200">Komik Tidak Ditemukan</h3>
             <p className="text-sm text-slate-400 mt-1">
-              Tidak ada komik yang cocok dengan kata kunci &quot;<span className="text-slate-200 font-medium">{searchQuery}</span>&quot;.
+              Tidak ada komik yang sesuai dengan kombinasi filter &amp; kriteria pencarian terpilih.
             </p>
           </div>
           <button
             type="button"
-            onClick={clearSearch}
+            onClick={resetAllFilters}
             className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold text-sm rounded-lg transition-colors cursor-pointer"
           >
-            Lihat Semua Komik
+            Reset Semua Filter
           </button>
         </div>
       )}
 
       {/* Default Empty State */}
-      {!isLoading && !error && !searchQuery && !selectedGenre && mangaList.length === 0 && (
+      {!isLoading && !error && !hasActiveFilters && mangaList.length === 0 && (
         <div className="border border-slate-800 bg-slate-900/30 rounded-2xl p-10 text-center max-w-md mx-auto my-8 space-y-3">
           <div className="w-12 h-12 bg-slate-800 text-slate-400 rounded-full flex items-center justify-center mx-auto">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
