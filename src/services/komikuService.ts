@@ -24,6 +24,7 @@ export async function getMangaList(params: MangaListParams = {}): Promise<MangaL
         ...(params.q ? { q: params.q } : {}),
         ...(params.type ? { type: params.type } : {}),
         ...(params.sort ? { sort: params.sort } : {}),
+        ...(params.genre ? { genre: params.genre } : {}),
       },
     })
     return response.data

@@ -17,6 +17,7 @@ export interface MangaListParams {
   q?: string
   type?: string
   sort?: string
+  genre?: string
 }
 
 export interface MangaListResponse {

@@ -8,53 +8,60 @@ export interface UseHomeMangaReturn {
   error: string | null
   currentPage: number
   searchQuery: string
+  selectedGenre: string
   hasNextPage: boolean
   setCurrentPage: (page: number) => void
   handleSearch: (query: string) => void
   clearSearch: () => void
+  handleSelectGenre: (genreSlug: string) => void
   refetch: () => void
 }
 
 export function useHomeManga(initialPage = 1): UseHomeMangaReturn {
   const [currentPage, setCurrentPageState] = useState<number>(initialPage)
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [selectedGenre, setSelectedGenre] = useState<string>('')
   const [mangaList, setMangaList] = useState<MangaListItem[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [hasNextPage, setHasNextPage] = useState<boolean>(true)
 
-  const fetchManga = useCallback(async (pageToFetch: number, queryToFetch: string) => {
-    setIsLoading(true)
-    setError(null)
+  const fetchManga = useCallback(
+    async (pageToFetch: number, queryToFetch: string, genreToFetch: string) => {
+      setIsLoading(true)
+      setError(null)
 
-    try {
-      const response = await getMangaList({
-        page: pageToFetch,
-        q: queryToFetch || undefined,
-      })
+      try {
+        const response = await getMangaList({
+          page: pageToFetch,
+          q: queryToFetch || undefined,
+          genre: genreToFetch || undefined,
+        })
 
-      if (response && Array.isArray(response.results)) {
-        setMangaList(response.results)
-        setHasNextPage(response.results.length > 0)
-      } else {
+        if (response && Array.isArray(response.results)) {
+          setMangaList(response.results)
+          setHasNextPage(response.results.length > 0)
+        } else {
+          setMangaList([])
+          setHasNextPage(false)
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : 'Gagal memuat daftar komik. Silakan periksa koneksi internet Anda.'
+        setError(errorMessage)
         setMangaList([])
-        setHasNextPage(false)
+      } finally {
+        setIsLoading(false)
       }
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : 'Gagal memuat daftar komik. Silakan periksa koneksi internet Anda.'
-      setError(errorMessage)
-      setMangaList([])
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
+    },
+    []
+  )
 
   useEffect(() => {
-    fetchManga(currentPage, searchQuery)
-  }, [currentPage, searchQuery, fetchManga])
+    fetchManga(currentPage, searchQuery, selectedGenre)
+  }, [currentPage, searchQuery, selectedGenre, fetchManga])
 
   const setCurrentPage = useCallback((page: number) => {
     if (page < 1) return
@@ -81,9 +88,17 @@ export function useHomeManga(initialPage = 1): UseHomeMangaReturn {
     }
   }, [])
 
+  const handleSelectGenre = useCallback((genreSlug: string) => {
+    setSelectedGenre(genreSlug)
+    setCurrentPageState(1)
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [])
+
   const refetch = useCallback(() => {
-    fetchManga(currentPage, searchQuery)
-  }, [currentPage, searchQuery, fetchManga])
+    fetchManga(currentPage, searchQuery, selectedGenre)
+  }, [currentPage, searchQuery, selectedGenre, fetchManga])
 
   return {
     mangaList,
@@ -91,10 +106,12 @@ export function useHomeManga(initialPage = 1): UseHomeMangaReturn {
     error,
     currentPage,
     searchQuery,
+    selectedGenre,
     hasNextPage,
     setCurrentPage,
     handleSearch,
     clearSearch,
+    handleSelectGenre,
     refetch,
   }
 }
