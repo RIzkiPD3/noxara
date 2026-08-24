@@ -3,6 +3,8 @@ import AppLayout from '@/components/layout/AppLayout'
 import HomePage from '@/features/home/HomePage'
 import MangaDetailPage from '@/features/manga-detail/MangaDetailPage'
 import ComicReaderPage from '@/features/reader/ComicReaderPage'
+import EntrancePage from '@/features/entrance/EntrancePage'
+import { ENTRANCE_CONFIG } from '@/features/entrance/config/entranceConfig'
 import { useHomeManga } from '@/features/home/hooks/useHomeManga'
 
 interface HashState {
@@ -25,6 +27,15 @@ function parseHash(): HashState {
 }
 
 export default function App() {
+  const [isAccessGranted, setIsAccessGranted] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false
+    try {
+      return sessionStorage.getItem(ENTRANCE_CONFIG.storageKey) === 'true'
+    } catch {
+      return false
+    }
+  })
+
   const mangaState = useHomeManga()
   const [hashState, setHashState] = useState<HashState>(parseHash)
   const [selectedMangaSlug, setSelectedMangaSlug] = useState<string | null>(null)
@@ -82,6 +93,11 @@ export default function App() {
     setSelectedThumbnail(undefined)
     mangaState.handleSelectGenre(genreSlug)
   }, [mangaState])
+
+  // Gate Check: Show Entrance Page if access is not granted
+  if (!isAccessGranted) {
+    return <EntrancePage onAccessGranted={() => setIsAccessGranted(true)} />
+  }
 
   return (
     <AppLayout
