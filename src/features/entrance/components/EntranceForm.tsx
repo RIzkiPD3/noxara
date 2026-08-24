@@ -1,0 +1,81 @@
+import type { FormEvent } from 'react'
+
+export interface EntranceFormProps {
+  passwordInput: string
+  errorWarning: string | null
+  isEntering: boolean
+  onPasswordChange: (val: string) => void
+  onSubmit: (e?: FormEvent) => void
+}
+
+export default function EntranceForm({
+  passwordInput,
+  errorWarning,
+  isEntering,
+  onPasswordChange,
+  onSubmit,
+}: EntranceFormProps) {
+  return (
+    <form onSubmit={onSubmit} className="w-full space-y-5">
+      {/* Password Input Container */}
+      <div className="space-y-2">
+        <label htmlFor="entrance-password" className="text-xs font-semibold text-slate-300 uppercase tracking-wider block">
+          Password Akses
+        </label>
+        <div className="relative">
+          <input
+            id="entrance-password"
+            type="password"
+            value={passwordInput}
+            onChange={(e) => onPasswordChange(e.target.value)}
+            disabled={isEntering}
+            placeholder="Masukkan password..."
+            autoFocus
+            className={`w-full px-4 py-3 bg-slate-950/80 border rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none transition-all duration-200 text-sm font-medium ${
+              errorWarning
+                ? 'border-red-800 focus:border-red-500 focus:ring-1 focus:ring-red-500'
+                : 'border-slate-800 hover:border-slate-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500'
+            }`}
+          />
+        </div>
+      </div>
+
+      {/* Warning Box */}
+      {errorWarning && (
+        <div className="flex items-center gap-2.5 p-3 rounded-xl bg-red-950/40 border border-red-900/60 text-xs font-medium text-red-400 animate-bounce-once">
+          <svg className="w-4 h-4 shrink-0 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>{errorWarning}</span>
+        </div>
+      )}
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        disabled={isEntering}
+        className={`w-full py-3.5 px-6 rounded-xl text-sm font-bold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-lg ${
+          isEntering
+            ? 'bg-emerald-600 text-slate-950 shadow-emerald-500/20 opacity-90'
+            : 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-500/20 hover:shadow-emerald-500/30 active:scale-[0.99]'
+        }`}
+      >
+        {isEntering ? (
+          <>
+            <svg className="w-4 h-4 animate-spin text-slate-950" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>Membuka Gerbang...</span>
+          </>
+        ) : (
+          <>
+            <span>Masuk Ke Noxara</span>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </>
+        )}
+      </button>
+    </form>
+  )
+}
