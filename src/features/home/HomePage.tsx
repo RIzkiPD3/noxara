@@ -1,6 +1,7 @@
 import type { UseHomeMangaReturn } from './hooks/useHomeManga'
 import ComicGrid from './components/ComicGrid'
 import Pagination from '@/components/ui/Pagination'
+import GenreBar from '@/features/genres/components/GenreBar'
 
 export interface HomePageProps {
   mangaState: UseHomeMangaReturn
@@ -13,25 +14,42 @@ export default function HomePage({ mangaState }: HomePageProps) {
     error,
     currentPage,
     searchQuery,
+    selectedGenre,
     hasNextPage,
     setCurrentPage,
     clearSearch,
+    handleSelectGenre,
     refetch,
   } = mangaState
+
+  // Helper for heading title
+  const getHeadingTitle = () => {
+    if (searchQuery) return `Hasil Pencarian: "${searchQuery}"`
+    if (selectedGenre) {
+      const formattedGenre = selectedGenre.charAt(0).toUpperCase() + selectedGenre.slice(1)
+      return `Komik Genre: ${formattedGenre}`
+    }
+    return 'Komik Terbaru'
+  }
+
+  // Helper for subtitle
+  const getHeadingSubtitle = () => {
+    if (searchQuery) return `Menampilkan hasil pencarian komik untuk kata kunci "${searchQuery}"`
+    if (selectedGenre) return `Menampilkan daftar komik dengan genre ${selectedGenre}`
+    return 'Jelajahi komik terbaru yang diperbarui di Noxara'
+  }
 
   return (
     <section className="space-y-6">
       {/* Page Heading */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-100 tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-100 tracking-tight flex items-center gap-2 capitalize">
             <span className="w-2 h-7 bg-emerald-500 rounded-full inline-block" />
-            {searchQuery ? `Hasil Pencarian: "${searchQuery}"` : 'Komik Terbaru'}
+            {getHeadingTitle()}
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            {searchQuery
-              ? `Menampilkan hasil pencarian komik untuk kata kunci "${searchQuery}"`
-              : 'Jelajahi komik terbaru yang diperbarui di Noxara'}
+            {getHeadingSubtitle()}
           </p>
         </div>
 
@@ -50,9 +68,12 @@ export default function HomePage({ mangaState }: HomePageProps) {
         )}
       </div>
 
+      {/* Genre Filter Bar */}
+      <GenreBar selectedGenre={selectedGenre} onSelectGenre={handleSelectGenre} />
+
       {/* Loading State */}
       {isLoading && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 pt-2">
           {Array.from({ length: 10 }).map((_, index) => (
             <div
               key={index}
@@ -90,8 +111,32 @@ export default function HomePage({ mangaState }: HomePageProps) {
         </div>
       )}
 
+      {/* Genre Empty State */}
+      {!isLoading && !error && selectedGenre && mangaList.length === 0 && (
+        <div className="border border-slate-800 bg-slate-900/30 rounded-2xl p-10 text-center max-w-md mx-auto my-8 space-y-4">
+          <div className="w-12 h-12 bg-slate-800 text-slate-400 rounded-full flex items-center justify-center mx-auto">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 7h10M7 12h10m-8 5h8" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-slate-200">Belum Ada Komik Untuk Genre Ini</h3>
+            <p className="text-sm text-slate-400 mt-1">
+              Tidak ada komik yang tersedia pada genre &quot;<span className="text-slate-200 font-medium capitalize">{selectedGenre}</span>&quot;.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => handleSelectGenre('')}
+            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold text-sm rounded-lg transition-colors cursor-pointer"
+          >
+            Lihat Semua Genre
+          </button>
+        </div>
+      )}
+
       {/* Search Empty State */}
-      {!isLoading && !error && searchQuery && mangaList.length === 0 && (
+      {!isLoading && !error && searchQuery && !selectedGenre && mangaList.length === 0 && (
         <div className="border border-slate-800 bg-slate-900/30 rounded-2xl p-10 text-center max-w-md mx-auto my-8 space-y-4">
           <div className="w-12 h-12 bg-slate-800 text-slate-400 rounded-full flex items-center justify-center mx-auto">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -115,7 +160,7 @@ export default function HomePage({ mangaState }: HomePageProps) {
       )}
 
       {/* Default Empty State */}
-      {!isLoading && !error && !searchQuery && mangaList.length === 0 && (
+      {!isLoading && !error && !searchQuery && !selectedGenre && mangaList.length === 0 && (
         <div className="border border-slate-800 bg-slate-900/30 rounded-2xl p-10 text-center max-w-md mx-auto my-8 space-y-3">
           <div className="w-12 h-12 bg-slate-800 text-slate-400 rounded-full flex items-center justify-center mx-auto">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
