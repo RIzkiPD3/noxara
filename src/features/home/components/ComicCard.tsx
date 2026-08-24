@@ -82,8 +82,8 @@ export default function ComicCard({ manga, onSelectManga }: ComicCardProps) {
       </div>
 
       {/* Content Body */}
-      <div className="p-3.5 flex flex-col flex-1 justify-between gap-2">
-        <h3 className="text-sm font-semibold text-slate-100 group-hover:text-emerald-400 line-clamp-2 leading-snug transition-colors">
+      <div className="p-2.5 sm:p-3.5 flex flex-col flex-1 justify-between gap-1.5 sm:gap-2">
+        <h3 className="text-xs sm:text-sm font-semibold text-slate-100 group-hover:text-emerald-400 line-clamp-2 leading-snug transition-colors">
           {manga.title}
         </h3>
 
