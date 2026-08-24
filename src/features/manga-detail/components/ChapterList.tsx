@@ -28,13 +28,13 @@ export default function ChapterList({
   }
 
   return (
-    <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 sm:p-6 space-y-4">
+    <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6 space-y-4 shadow-lg">
       {/* Header & Chapter Search */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
         <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
           <span className="w-1.5 h-5 bg-emerald-500 rounded-full inline-block" />
           Daftar Chapter
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700/60">
+          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700/60">
             {totalCount}
           </span>
         </h2>
@@ -47,7 +47,7 @@ export default function ChapterList({
               value={filterQuery}
               onChange={(e) => setFilterQuery(e.target.value)}
               placeholder="Cari chapter..."
-              className="w-full min-h-[38px] pl-8 pr-3 py-1.5 bg-slate-800/80 border border-slate-700/60 focus:border-emerald-500/80 rounded-lg text-xs text-slate-100 placeholder-slate-400 focus:outline-none transition-colors"
+              className="w-full min-h-[38px] pl-8 pr-3 py-1.5 bg-slate-950/80 border border-slate-700/60 focus:border-emerald-500/80 rounded-lg text-xs text-slate-100 placeholder-slate-400 focus:outline-none transition-colors"
             />
             <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -68,7 +68,7 @@ export default function ChapterList({
                 key={chapter.slug || chapter.title}
                 href={href}
                 onClick={(e) => handleChapterClick(e, chapter.slug)}
-                className="min-h-[44px] flex items-center justify-between p-3 sm:p-3.5 rounded-xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-800/60 hover:border-slate-700/80 transition-all group cursor-pointer block"
+                className="min-h-[44px] flex items-center justify-between p-3 sm:p-3.5 rounded-lg bg-slate-950/80 hover:bg-slate-800/90 border border-slate-800/60 hover:border-emerald-500/40 transition-all group cursor-pointer block"
               >
                 <span className="text-xs sm:text-sm font-semibold text-slate-200 group-hover:text-emerald-400 transition-colors pr-2">
                   {chapter.title}

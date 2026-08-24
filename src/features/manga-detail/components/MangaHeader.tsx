@@ -6,9 +6,15 @@ export interface MangaHeaderProps {
   detail: MangaDetail
   fallbackThumbnail?: string
   onSelectGenre?: (genreSlug: string) => void
+  onSelectChapter?: (chapterSlug: string) => void
 }
 
-export default function MangaHeader({ detail, fallbackThumbnail, onSelectGenre }: MangaHeaderProps) {
+export default function MangaHeader({
+  detail,
+  fallbackThumbnail,
+  onSelectGenre,
+  onSelectChapter,
+}: MangaHeaderProps) {
   const rawThumbnail = detail.thumbnail || fallbackThumbnail || ''
 
   const [imgSrc, setImgSrc] = useState<string>(() =>
@@ -56,8 +62,12 @@ export default function MangaHeader({ detail, fallbackThumbnail, onSelectGenre }
     return 'bg-slate-800 text-slate-300 border-slate-700'
   }
 
+  const firstChapterSlug = detail.chapters && detail.chapters.length > 0
+    ? detail.chapters[0].slug
+    : null
+
   return (
-    <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 sm:p-6 lg:p-8 backdrop-blur-sm shadow-xl">
+    <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg">
       <div className="flex flex-col md:flex-row gap-6 lg:gap-8 items-start">
         
         {/* Cover Image Container */}
@@ -158,6 +168,22 @@ export default function MangaHeader({ detail, fallbackThumbnail, onSelectGenre }
                   </button>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Primary Action CTA: Mulai Membaca */}
+          {firstChapterSlug && onSelectChapter && (
+            <div className="pt-4 border-t border-slate-800/80">
+              <button
+                type="button"
+                onClick={() => onSelectChapter(firstChapterSlug)}
+                className="min-h-[44px] w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-98 cursor-pointer"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                <span>Mulai Membaca Komik</span>
+              </button>
             </div>
           )}
 

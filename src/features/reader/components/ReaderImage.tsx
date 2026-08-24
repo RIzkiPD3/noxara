@@ -33,7 +33,7 @@ export default function ReaderImage({ src, pageNumber, chapterTitle }: ReaderIma
   }
 
   return (
-    <div className="relative w-full max-w-3xl mx-auto my-1 flex flex-col items-center bg-slate-950 rounded-lg overflow-hidden border border-slate-900/60 shadow-md">
+    <div className="relative w-full max-w-3xl mx-auto flex flex-col items-center bg-slate-950">
       {/* Loading Skeleton */}
       {!isLoaded && !hasError && (
         <div className="w-full aspect-[3/4] max-h-[900px] bg-slate-900/80 animate-pulse flex flex-col items-center justify-center text-slate-700">
@@ -44,7 +44,7 @@ export default function ReaderImage({ src, pageNumber, chapterTitle }: ReaderIma
         </div>
       )}
 
-      {/* Image Element */}
+      {/* Image Element - Seamless display */}
       {!hasError && proxyUrl && (
         <img
           src={proxyUrl}
@@ -52,7 +52,7 @@ export default function ReaderImage({ src, pageNumber, chapterTitle }: ReaderIma
           onLoad={() => setIsLoaded(true)}
           onError={handleImageError}
           loading="lazy"
-          className={`w-full h-auto object-contain transition-opacity duration-200 ${
+          className={`w-full h-auto object-contain block ${
             isLoaded ? 'opacity-100' : 'opacity-0 absolute'
           }`}
         />
@@ -76,11 +76,6 @@ export default function ReaderImage({ src, pageNumber, chapterTitle }: ReaderIma
           </button>
         </div>
       )}
-
-      {/* Page Number Tag */}
-      <div className="py-1 text-[11px] font-mono text-slate-500 select-none">
-        — Halaman {pageNumber} —
-      </div>
     </div>
   )
 }

@@ -97,6 +97,7 @@ export default function MangaDetailPage({
             detail={mangaDetail}
             fallbackThumbnail={fallbackThumbnail}
             onSelectGenre={onSelectGenre}
+            onSelectChapter={onSelectChapter}
           />
           <MangaSynopsis synopsis={mangaDetail.synopsis} />
           <ChapterList

@@ -94,6 +94,27 @@ export default function App() {
     mangaState.handleSelectGenre(genreSlug)
   }, [mangaState])
 
+  const handleNavigateHome = useCallback(() => {
+    window.location.hash = ''
+    setSelectedMangaSlug(null)
+    setSelectedThumbnail(undefined)
+    mangaState.resetAllFilters()
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [mangaState])
+
+  const handleNavigateGenre = useCallback(() => {
+    if (hashState.view !== 'home') {
+      window.location.hash = ''
+      setSelectedMangaSlug(null)
+      setSelectedThumbnail(undefined)
+    }
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [hashState.view])
+
   // Gate Check: Show Entrance Page if access is not granted
   if (!isAccessGranted) {
     return <EntrancePage onAccessGranted={() => setIsAccessGranted(true)} />
@@ -102,6 +123,7 @@ export default function App() {
   return (
     <AppLayout
       searchQuery={mangaState.searchQuery}
+      activeView={hashState.view}
       onSearch={(q) => {
         if (hashState.view !== 'home') {
           window.location.hash = ''
@@ -110,6 +132,8 @@ export default function App() {
         }
         mangaState.handleSearch(q)
       }}
+      onNavigateHome={handleNavigateHome}
+      onNavigateGenre={handleNavigateGenre}
     >
       {hashState.view === 'reader' && hashState.slug ? (
         <ComicReaderPage

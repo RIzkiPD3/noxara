@@ -1,24 +1,20 @@
 import { useState, useEffect, type FormEvent } from 'react'
 
-interface NavItem {
-  label: string
-  href: string
-  active?: boolean
-}
-
-const NAV_ITEMS: NavItem[] = [
-  { label: 'Home', href: '#', active: true },
-  { label: 'Daftar Komik', href: '#' },
-  { label: 'Genre', href: '#' },
-  { label: 'Bookmark', href: '#' },
-]
-
 export interface NavbarProps {
   searchQuery?: string
+  activeView?: 'home' | 'detail' | 'reader'
   onSearch?: (query: string) => void
+  onNavigateHome?: () => void
+  onNavigateGenre?: () => void
 }
 
-export default function Navbar({ searchQuery = '', onSearch }: NavbarProps) {
+export default function Navbar({
+  searchQuery = '',
+  activeView = 'home',
+  onSearch,
+  onNavigateHome,
+  onNavigateGenre,
+}: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [inputValue, setInputValue] = useState(searchQuery)
 
@@ -42,8 +38,21 @@ export default function Navbar({ searchQuery = '', onSearch }: NavbarProps) {
     }
   }
 
+  const handleHomeClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    handleClear()
+    if (onNavigateHome) onNavigateHome()
+    setIsMobileMenuOpen(false)
+  }
+
+  const handleGenreClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (onNavigateGenre) onNavigateGenre()
+    setIsMobileMenuOpen(false)
+  }
+
   return (
-    <header className="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80">
+    <header className="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           
@@ -51,11 +60,8 @@ export default function Navbar({ searchQuery = '', onSearch }: NavbarProps) {
           <div className="flex items-center gap-3">
             <a
               href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                handleClear()
-              }}
-              className="flex items-center gap-2 group"
+              onClick={handleHomeClick}
+              className="flex items-center gap-2 group cursor-pointer"
             >
               <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
                 N
@@ -68,19 +74,36 @@ export default function Navbar({ searchQuery = '', onSearch }: NavbarProps) {
 
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center space-x-1 lg:space-x-2">
-            {NAV_ITEMS.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  item.active
-                    ? 'bg-slate-800 text-emerald-400 font-semibold'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
-                }`}
-              >
-                {item.label}
-              </a>
-            ))}
+            {/* Home */}
+            <a
+              href="#"
+              onClick={handleHomeClick}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                activeView === 'home'
+                  ? 'bg-slate-800 text-emerald-400 font-semibold'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+              }`}
+            >
+              Home
+            </a>
+
+            {/* Daftar Komik */}
+            <a
+              href="#"
+              onClick={handleHomeClick}
+              className="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/50 transition-colors cursor-pointer"
+            >
+              Daftar Komik
+            </a>
+
+            {/* Genre */}
+            <a
+              href="#"
+              onClick={handleGenreClick}
+              className="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/50 transition-colors cursor-pointer"
+            >
+              Genre
+            </a>
           </nav>
 
           {/* Search Bar Form (Desktop) */}
@@ -139,7 +162,7 @@ export default function Navbar({ searchQuery = '', onSearch }: NavbarProps) {
 
       {/* Mobile Navigation & Search Dropdown Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-b border-slate-800 bg-slate-900/95 px-4 pt-2 pb-4 space-y-2" id="mobile-menu">
+        <div className="md:hidden border-b border-slate-800 bg-slate-900 px-4 pt-2 pb-4 space-y-2" id="mobile-menu">
           {/* Mobile Search Form */}
           <form onSubmit={handleSubmit} className="mb-3">
             <div className="relative w-full">
@@ -172,19 +195,31 @@ export default function Navbar({ searchQuery = '', onSearch }: NavbarProps) {
           </form>
 
           {/* Navigation Links */}
-          {NAV_ITEMS.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                item.active
-                  ? 'bg-slate-800 text-emerald-400 font-semibold'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
-              }`}
-            >
-              {item.label}
-            </a>
-          ))}
+          <a
+            href="#"
+            onClick={handleHomeClick}
+            className={`block px-3 py-2 rounded-md text-base font-medium transition-colors cursor-pointer ${
+              activeView === 'home'
+                ? 'bg-slate-800 text-emerald-400 font-semibold'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+            }`}
+          >
+            Home
+          </a>
+          <a
+            href="#"
+            onClick={handleHomeClick}
+            className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800/50 transition-colors cursor-pointer"
+          >
+            Daftar Komik
+          </a>
+          <a
+            href="#"
+            onClick={handleGenreClick}
+            className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800/50 transition-colors cursor-pointer"
+          >
+            Genre
+          </a>
         </div>
       )}
     </header>
