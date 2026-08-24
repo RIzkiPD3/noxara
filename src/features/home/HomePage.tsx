@@ -1,8 +1,10 @@
 import { useHomeManga } from './hooks/useHomeManga'
 import ComicGrid from './components/ComicGrid'
+import Pagination from '@/components/ui/Pagination'
 
 export default function HomePage() {
-  const { mangaList, isLoading, error, refetch } = useHomeManga()
+  const { mangaList, isLoading, error, currentPage, hasNextPage, setCurrentPage, refetch } =
+    useHomeManga()
 
   return (
     <section className="space-y-6">
@@ -19,7 +21,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Loading State */}
+      {/* Loading State (Initial / Transition) */}
       {isLoading && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
           {Array.from({ length: 10 }).map((_, index) => (
@@ -68,13 +70,21 @@ export default function HomePage() {
             </svg>
           </div>
           <h3 className="text-base font-semibold text-slate-200">Belum Ada Komik</h3>
-          <p className="text-sm text-slate-400">Tidak ada data komik yang dapat ditampilkan saat ini.</p>
+          <p className="text-sm text-slate-400">Tidak ada data komik yang dapat ditampilkan pada halaman ini.</p>
         </div>
       )}
 
-      {/* Success State: Comic Grid */}
+      {/* Success State: Comic Grid & Pagination */}
       {!isLoading && !error && mangaList.length > 0 && (
-        <ComicGrid items={mangaList} />
+        <>
+          <ComicGrid items={mangaList} />
+          <Pagination
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+            hasNextPage={hasNextPage}
+            isLoading={isLoading}
+          />
+        </>
       )}
     </section>
   )
