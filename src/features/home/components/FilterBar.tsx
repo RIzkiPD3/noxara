@@ -29,11 +29,11 @@ export default function FilterBar({
   hasActiveFilters = false,
 }: FilterBarProps) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-900/60 border border-slate-800/80 rounded-xl">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 bg-slate-900/60 border border-slate-800/80 rounded-xl">
       {/* Controls Container */}
       <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
         {/* Type Filter Select */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-1 sm:flex-none">
           <label htmlFor="filter-type" className="text-xs font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">
             Tipe:
           </label>
@@ -41,7 +41,7 @@ export default function FilterBar({
             id="filter-type"
             value={selectedType}
             onChange={(e) => onSelectType(e.target.value)}
-            className="bg-slate-800/90 border border-slate-700/80 hover:border-slate-600 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
+            className="w-full sm:w-auto min-h-[40px] bg-slate-800/90 border border-slate-700/80 hover:border-slate-600 text-slate-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
           >
             {TYPE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value} className="bg-slate-900 text-slate-200">
@@ -52,7 +52,7 @@ export default function FilterBar({
         </div>
 
         {/* Sort Select */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-1 sm:flex-none">
           <label htmlFor="filter-sort" className="text-xs font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">
             Urutkan:
           </label>
@@ -60,7 +60,7 @@ export default function FilterBar({
             id="filter-sort"
             value={selectedSort}
             onChange={(e) => onSelectSort(e.target.value)}
-            className="bg-slate-800/90 border border-slate-700/80 hover:border-slate-600 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
+            className="w-full sm:w-auto min-h-[40px] bg-slate-800/90 border border-slate-700/80 hover:border-slate-600 text-slate-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value} className="bg-slate-900 text-slate-200">
@@ -76,7 +76,7 @@ export default function FilterBar({
         <button
           type="button"
           onClick={onResetFilters}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium transition-colors cursor-pointer ml-auto"
+          className="min-h-[40px] flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium transition-colors cursor-pointer sm:ml-auto w-full sm:w-auto"
         >
           <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

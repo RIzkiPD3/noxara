@@ -26,9 +26,9 @@ export default function ReaderHeader({
         <button
           type="button"
           onClick={onBack}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-emerald-400 text-xs font-semibold transition-colors cursor-pointer shrink-0"
+          className="min-h-[40px] flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-emerald-400 text-xs font-semibold transition-colors cursor-pointer shrink-0"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
           <span className="hidden sm:inline">Kembali</span>
@@ -48,19 +48,19 @@ export default function ReaderHeader({
 
         {/* Header Quick Chapter Navigation Buttons */}
         {onSelectChapter && (
-          <div className="flex items-center gap-1 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             <button
               type="button"
               disabled={!hasPrev}
               onClick={() => prevSlug && onSelectChapter(prevSlug)}
               title="Chapter Sebelumnya"
-              className={`p-1.5 rounded-lg border text-xs font-medium transition-colors ${
+              className={`min-h-[40px] min-w-[40px] flex items-center justify-center p-2 rounded-lg border text-xs font-medium transition-colors ${
                 hasPrev
                   ? 'bg-slate-900 border-slate-800 hover:border-slate-700 text-slate-200 hover:text-emerald-400 cursor-pointer'
                   : 'bg-slate-950 border-slate-900 text-slate-700 cursor-not-allowed opacity-50'
               }`}
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
@@ -69,13 +69,13 @@ export default function ReaderHeader({
               disabled={!hasNext}
               onClick={() => nextSlug && onSelectChapter(nextSlug)}
               title="Chapter Berikutnya"
-              className={`p-1.5 rounded-lg border text-xs font-medium transition-colors ${
+              className={`min-h-[40px] min-w-[40px] flex items-center justify-center p-2 rounded-lg border text-xs font-medium transition-colors ${
                 hasNext
                   ? 'bg-emerald-500 border-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold cursor-pointer'
                   : 'bg-slate-950 border-slate-900 text-slate-700 cursor-not-allowed opacity-50'
               }`}
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>

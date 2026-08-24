@@ -15,7 +15,7 @@ export default function GenreBar({ selectedGenre = '', onSelectGenre }: GenreBar
         <button
           type="button"
           onClick={refetch}
-          className="underline font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer"
+          className="underline font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer min-h-[36px] flex items-center"
         >
           Coba lagi
         </button>
@@ -31,20 +31,20 @@ export default function GenreBar({ selectedGenre = '', onSelectGenre }: GenreBar
           <button
             type="button"
             onClick={() => onSelectGenre('')}
-            className="text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer capitalize font-medium"
+            className="text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer capitalize font-medium py-1"
           >
             Reset Filter
           </button>
         )}
       </div>
 
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-1 scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent">
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-1 touch-pan-x scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent">
         {/* 'Semua' Option */}
         <button
           type="button"
           onClick={() => onSelectGenre('')}
           disabled={isLoading}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer ${
+          className={`min-h-[38px] px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer flex items-center justify-center ${
             !selectedGenre
               ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20 font-bold'
               : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/60'
@@ -58,7 +58,7 @@ export default function GenreBar({ selectedGenre = '', onSelectGenre }: GenreBar
           Array.from({ length: 8 }).map((_, index) => (
             <div
               key={index}
-              className="h-7 w-20 bg-slate-800/60 rounded-lg animate-pulse shrink-0"
+              className="min-h-[38px] w-20 bg-slate-800/60 rounded-lg animate-pulse shrink-0"
             />
           ))}
 
@@ -71,7 +71,7 @@ export default function GenreBar({ selectedGenre = '', onSelectGenre }: GenreBar
                 key={genre.slug}
                 type="button"
                 onClick={() => onSelectGenre(genre.slug)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer ${
+                className={`min-h-[38px] px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer flex items-center justify-center ${
                   isActive
                     ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20 font-bold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/60'
