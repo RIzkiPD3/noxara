@@ -1,12 +1,17 @@
-import { useState } from 'react'
+import { useState, type MouseEvent } from 'react'
 import type { MangaChapterItem } from '@/types/komiku'
 
 export interface ChapterListProps {
   chapters?: MangaChapterItem[]
   chaptersCount?: number
+  onSelectChapter?: (chapterSlug: string) => void
 }
 
-export default function ChapterList({ chapters = [], chaptersCount }: ChapterListProps) {
+export default function ChapterList({
+  chapters = [],
+  chaptersCount,
+  onSelectChapter,
+}: ChapterListProps) {
   const [filterQuery, setFilterQuery] = useState<string>('')
 
   const filteredChapters = chapters.filter((c) =>
@@ -14,6 +19,13 @@ export default function ChapterList({ chapters = [], chaptersCount }: ChapterLis
   )
 
   const totalCount = chaptersCount ?? chapters.length
+
+  const handleChapterClick = (e: MouseEvent<HTMLAnchorElement>, slug: string) => {
+    if (onSelectChapter && slug) {
+      e.preventDefault()
+      onSelectChapter(slug)
+    }
+  }
 
   return (
     <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-4">
@@ -49,21 +61,26 @@ export default function ChapterList({ chapters = [], chaptersCount }: ChapterLis
       {/* Chapter Items List */}
       {filteredChapters.length > 0 ? (
         <div className="max-h-[500px] overflow-y-auto pr-1 space-y-2 scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent">
-          {filteredChapters.map((chapter) => (
-            <div
-              key={chapter.slug || chapter.title}
-              className="flex items-center justify-between p-3.5 rounded-xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-800/60 hover:border-slate-700/80 transition-all group"
-            >
-              <span className="text-sm font-semibold text-slate-200 group-hover:text-emerald-400 transition-colors">
-                {chapter.title}
-              </span>
-              {chapter.release_date && (
-                <span className="text-xs text-slate-500 font-medium">
-                  {chapter.release_date}
+          {filteredChapters.map((chapter) => {
+            const href = chapter.slug ? `#/read/${chapter.slug}` : '#'
+            return (
+              <a
+                key={chapter.slug || chapter.title}
+                href={href}
+                onClick={(e) => handleChapterClick(e, chapter.slug)}
+                className="flex items-center justify-between p-3.5 rounded-xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-800/60 hover:border-slate-700/80 transition-all group cursor-pointer block"
+              >
+                <span className="text-sm font-semibold text-slate-200 group-hover:text-emerald-400 transition-colors">
+                  {chapter.title}
                 </span>
-              )}
-            </div>
-          ))}
+                {chapter.release_date && (
+                  <span className="text-xs text-slate-500 font-medium">
+                    {chapter.release_date}
+                  </span>
+                )}
+              </a>
+            )
+          })}
         </div>
       ) : (
         <div className="p-6 text-center text-sm text-slate-400 italic">
