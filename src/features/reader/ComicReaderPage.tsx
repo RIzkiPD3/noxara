@@ -1,14 +1,36 @@
+import { useCallback } from 'react'
 import { useComicReader } from './hooks/useComicReader'
 import ReaderHeader from './components/ReaderHeader'
 import ReaderImage from './components/ReaderImage'
+import ChapterNavigation from './components/ChapterNavigation'
 
 export interface ComicReaderPageProps {
   chapterSlug: string
   onBack: () => void
+  onSelectChapter?: (chapterSlug: string) => void
 }
 
-export default function ComicReaderPage({ chapterSlug, onBack }: ComicReaderPageProps) {
+export default function ComicReaderPage({
+  chapterSlug,
+  onBack,
+  onSelectChapter,
+}: ComicReaderPageProps) {
   const { chapterData, isLoading, error, refetch } = useComicReader(chapterSlug)
+
+  const handleNavigateChapter = useCallback(
+    (newSlug: string) => {
+      if (!newSlug) return
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'auto' })
+      }
+      if (onSelectChapter) {
+        onSelectChapter(newSlug)
+      } else if (typeof window !== 'undefined') {
+        window.location.hash = `#/read/${newSlug}`
+      }
+    },
+    [onSelectChapter]
+  )
 
   const scrollToTop = () => {
     if (typeof window !== 'undefined') {
@@ -18,6 +40,8 @@ export default function ComicReaderPage({ chapterSlug, onBack }: ComicReaderPage
 
   const images = chapterData?.images || []
   const totalCount = chapterData?.images_count || images.length
+  const prevSlug = chapterData?.prev_chapter || null
+  const nextSlug = chapterData?.next_chapter || null
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
@@ -25,11 +49,26 @@ export default function ComicReaderPage({ chapterSlug, onBack }: ComicReaderPage
       <ReaderHeader
         title={chapterData?.title}
         totalImages={totalCount}
+        prevSlug={prevSlug}
+        nextSlug={nextSlug}
         onBack={onBack}
+        onSelectChapter={handleNavigateChapter}
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-4xl mx-auto px-2 sm:px-4 py-4 space-y-3">
+      <main className="flex-1 w-full max-w-4xl mx-auto px-2 sm:px-4 py-4 space-y-4">
+        
+        {/* Top Chapter Navigation Toolbar */}
+        {!isLoading && !error && (prevSlug || nextSlug) && (
+          <div className="pb-2 border-b border-slate-900">
+            <ChapterNavigation
+              prevSlug={prevSlug}
+              nextSlug={nextSlug}
+              onSelectChapter={handleNavigateChapter}
+            />
+          </div>
+        )}
+
         {/* Loading State */}
         {isLoading && (
           <div className="space-y-4 max-w-3xl mx-auto py-8">
@@ -115,22 +154,30 @@ export default function ComicReaderPage({ chapterSlug, onBack }: ComicReaderPage
               />
             ))}
 
-            {/* Bottom Footer Actions */}
-            <div className="mt-8 mb-12 flex flex-col sm:flex-row items-center justify-center gap-4 w-full pt-6 border-t border-slate-900">
-              <button
-                type="button"
-                onClick={onBack}
-                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
-              >
-                ← Kembali ke Detail Komik
-              </button>
-              <button
-                type="button"
-                onClick={scrollToTop}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
-              >
-                ↑ Ke Atas Halaman
-              </button>
+            {/* Bottom Chapter Navigation & Action Footer */}
+            <div className="mt-8 mb-12 flex flex-col items-center gap-6 w-full pt-6 border-t border-slate-900">
+              <ChapterNavigation
+                prevSlug={prevSlug}
+                nextSlug={nextSlug}
+                onSelectChapter={handleNavigateChapter}
+              />
+
+              <div className="flex items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={onBack}
+                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                >
+                  ← Kembali ke Detail Komik
+                </button>
+                <button
+                  type="button"
+                  onClick={scrollToTop}
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                >
+                  ↑ Ke Atas Halaman
+                </button>
+              </div>
             </div>
           </div>
         )}
