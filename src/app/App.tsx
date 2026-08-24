@@ -99,6 +99,7 @@ export default function App() {
         <ComicReaderPage
           chapterSlug={hashState.slug}
           onBack={handleBackFromReader}
+          onSelectChapter={handleSelectChapter}
         />
       ) : hashState.view === 'detail' && hashState.slug ? (
         <MangaDetailPage
