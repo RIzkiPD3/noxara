@@ -48,18 +48,54 @@ export function useHomeManga(initialPage = 1): UseHomeMangaReturn {
       setError(null)
 
       try {
-        const response = await getMangaList({
-          page: 1,
-          q: queryToFetch || undefined,
-          genre: genreToFetch || undefined,
-          type: typeToFetch || undefined,
-          sort: sortToFetch || undefined,
-        })
-
-        if (response && Array.isArray(response.results)) {
-          setAllMangaList(response.results)
+        if (queryToFetch || genreToFetch || typeToFetch || sortToFetch) {
+          // Filtered view: fetch target parameter endpoint
+          const response = await getMangaList({
+            page: 1,
+            q: queryToFetch || undefined,
+            genre: genreToFetch || undefined,
+            type: typeToFetch || undefined,
+            sort: sortToFetch || undefined,
+          })
+          if (response && Array.isArray(response.results)) {
+            setAllMangaList(response.results)
+          } else {
+            setAllMangaList([])
+          }
         } else {
-          setAllMangaList([])
+          // General catalogue: aggregate items across multiple categories for an extensive multi-page pool
+          const endpoints = [
+            { page: 1 },
+            { type: 'manga' },
+            { type: 'manhwa' },
+            { type: 'manhua' },
+            { genre: 'action' },
+            { genre: 'isekai' },
+            { genre: 'fantasy' },
+            { genre: 'romance' },
+          ]
+
+          const responses = await Promise.allSettled(
+            endpoints.map((ep) => getMangaList(ep))
+          )
+
+          const collected: MangaListItem[] = []
+          responses.forEach((res) => {
+            if (res.status === 'fulfilled' && res.value && Array.isArray(res.value.results)) {
+              collected.push(...res.value.results)
+            }
+          })
+
+          // Deduplicate items by slug
+          const uniqueMap = new Map<string, MangaListItem>()
+          collected.forEach((item) => {
+            if (item && item.slug && !uniqueMap.has(item.slug)) {
+              uniqueMap.set(item.slug, item)
+            }
+          })
+
+          const combinedResults = Array.from(uniqueMap.values())
+          setAllMangaList(combinedResults)
         }
       } catch (err) {
         const errorMessage =
@@ -85,7 +121,7 @@ export function useHomeManga(initialPage = 1): UseHomeMangaReturn {
     return allMangaList.slice(start, start + ITEMS_PER_PAGE)
   }, [allMangaList, currentPage])
 
-  // hasNextPage condition based on total items available
+  // hasNextPage condition based on total items available in pool
   const hasNextPage = useMemo(() => {
     return currentPage * ITEMS_PER_PAGE < allMangaList.length
   }, [allMangaList.length, currentPage])
