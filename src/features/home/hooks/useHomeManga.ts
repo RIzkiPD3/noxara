@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { getMangaList } from '@/services/komikuService'
 import type { MangaListItem } from '@/types/komiku'
 
-const ITEMS_PER_PAGE = 6
+const ITEMS_PER_PAGE = 10
 
 export interface UseHomeMangaReturn {
   mangaList: MangaListItem[]
