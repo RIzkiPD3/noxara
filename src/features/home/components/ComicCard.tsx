@@ -1,6 +1,6 @@
-import { useState, type MouseEvent } from 'react'
+import { useState, useEffect, type MouseEvent } from 'react'
 import type { MangaListItem } from '@/types/komiku'
-import { getImageProxyUrl } from '@/services/komikuService'
+import { getImageProxyUrl, cleanMangaTitle, getMangaDetail } from '@/services/komikuService'
 
 export interface ComicCardProps {
   manga: MangaListItem
@@ -12,6 +12,41 @@ export default function ComicCard({ manga, onSelectManga }: ComicCardProps) {
     manga.thumbnail ? getImageProxyUrl(manga.thumbnail) : ''
   )
   const [hasError, setHasError] = useState<boolean>(false)
+
+  const [displayTitle, setDisplayTitle] = useState<string>(() =>
+    cleanMangaTitle(manga.title)
+  )
+  const [latestChapter, setLatestChapter] = useState<string | undefined>(
+    () => manga.latest_chapter
+  )
+
+  useEffect(() => {
+    setDisplayTitle(cleanMangaTitle(manga.title))
+    setLatestChapter(manga.latest_chapter)
+
+    if (!manga.slug) return
+
+    let isMounted = true
+    getMangaDetail(manga.slug)
+      .then((detailRes) => {
+        if (!isMounted) return
+        if (detailRes?.data) {
+          if (detailRes.data.title) {
+            setDisplayTitle(cleanMangaTitle(detailRes.data.title))
+          }
+          if (detailRes.data.chapters && detailRes.data.chapters.length > 0) {
+            setLatestChapter(detailRes.data.chapters[0].title)
+          }
+        }
+      })
+      .catch(() => {
+        // Fallback to initial values if fetch fails
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [manga.slug, manga.title, manga.latest_chapter])
 
   const handleImageError = () => {
     if (!hasError && manga.thumbnail && imgSrc !== manga.thumbnail) {
@@ -54,7 +89,7 @@ export default function ComicCard({ manga, onSelectManga }: ComicCardProps) {
         {imgSrc ? (
           <img
             src={imgSrc}
-            alt={manga.title}
+            alt={displayTitle || manga.title}
             onError={handleImageError}
             loading="lazy"
             className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-90"
@@ -84,14 +119,14 @@ export default function ComicCard({ manga, onSelectManga }: ComicCardProps) {
       {/* Content Body */}
       <div className="p-2.5 sm:p-3 flex flex-col flex-1 justify-between gap-1.5">
         <h3 className="text-xs sm:text-sm font-semibold text-slate-200 group-hover:text-emerald-400 line-clamp-2 leading-snug transition-colors">
-          {manga.title}
+          {displayTitle}
         </h3>
 
         {/* Latest Chapter Footer */}
-        {manga.latest_chapter && (
+        {latestChapter && (
           <div className="pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
             <span className="truncate text-slate-400 group-hover:text-slate-300">
-              {manga.latest_chapter}
+              {latestChapter}
             </span>
           </div>
         )}
